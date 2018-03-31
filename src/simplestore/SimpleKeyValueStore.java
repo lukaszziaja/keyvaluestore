@@ -23,17 +23,20 @@ import java.util.stream.Stream;
  */
 public class SimpleKeyValueStore<T extends Serializable> implements KeyValueStore<T> {
 
-    private Map<String, T> store = new LinkedHashMap<>();
+    private Map<String, LinkedHashMap<String,T>> store = new LinkedHashMap<>();
 
     @Override
     public void put(String namespace, String key, T value) throws IOException, ClassNotFoundException {
         T newValue = this.clone(value);
-        String namespaceWithKey = namespaceKeyJoiner(namespace, key);
-        store.put(namespaceWithKey, newValue);
-    }
-
-    private String namespaceKeyJoiner(String namespace, String key) {
-        return namespace + "." + key;
+        if(!store.containsKey(namespace)){
+            LinkedHashMap<String, T> namespaceMap = new LinkedHashMap<>();
+            namespaceMap.put(key,newValue);
+            store.put(namespace,namespaceMap);
+        }else{
+            LinkedHashMap<String, T> stringTLinkedHashMap = store.get(namespace);
+            stringTLinkedHashMap.put(key,newValue);
+            store.put(namespace,stringTLinkedHashMap);
+        }
     }
 
     private T clone(T obj) throws IOException, ClassNotFoundException {
@@ -56,49 +59,39 @@ public class SimpleKeyValueStore<T extends Serializable> implements KeyValueStor
 
     @Override
     public T get(String namespace, String key) {
-        return store.get(namespaceKeyJoiner(namespace, key));
+        Map<String, T> namespaceMap = store.get(namespace);
+        return namespaceMap.get(key);
     }
 
     @Override
     public boolean delete(String namespace, String key) {
-        T remove = store.remove(namespaceKeyJoiner(namespace, key));
+        Map<String, T> namespaceMap = store.get(namespace);
+        T remove = namespaceMap.remove(key);
         return remove != null;
     }
 
-    private LinkedHashMap<String,T> extractNamespace(String namespace){
-        LinkedHashMap<String, T> certainNamespace = new LinkedHashMap<>();
-
-        for (Map.Entry<String,T> entry : store.entrySet()) {
-            if(entry.getKey().contains(namespace)){
-                certainNamespace.put(entry.getKey(), entry.getValue());
-            }
-        }
-        return certainNamespace;
-    }
-
     public Stream<T> filter(String namespace, Predicate<? super T> predicate) {
-        LinkedHashMap<String, T> stringTLinkedHashMap = extractNamespace(namespace);
+        LinkedHashMap<String, T> stringTLinkedHashMap = store.get(namespace);
         return stringTLinkedHashMap.values().stream().filter(predicate);
     }
 
-
     public <R> Stream<R> map(String namespace, Function<? super T, ? extends R> mapper) {
-        LinkedHashMap<String, T> stringTLinkedHashMap = extractNamespace(namespace);
+        LinkedHashMap<String, T> stringTLinkedHashMap = store.get(namespace);
         return stringTLinkedHashMap.values().stream().map(mapper);
     }
 
     public T reduce(String namespace,T identity, BinaryOperator<T> accumulator) {
-        LinkedHashMap<String, T> stringTLinkedHashMap = extractNamespace(namespace);
+        LinkedHashMap<String, T> stringTLinkedHashMap = store.get(namespace);
         return stringTLinkedHashMap.values().stream().reduce(identity, accumulator);
     }
 
     public Optional<T> reduce(String namespace, BinaryOperator<T> accumulator) {
-        LinkedHashMap<String, T> stringTLinkedHashMap = extractNamespace(namespace);
+        LinkedHashMap<String, T> stringTLinkedHashMap = store.get(namespace);
         return stringTLinkedHashMap.values().stream().reduce(accumulator);
     }
 
     public <U> U reduce(String namespace, U identity, BiFunction<U, ? super T, U> accumulator, BinaryOperator<U> combiner) {
-        LinkedHashMap<String, T> stringTLinkedHashMap = extractNamespace(namespace);
+        LinkedHashMap<String, T> stringTLinkedHashMap = store.get(namespace);
         return stringTLinkedHashMap.values().stream().reduce(identity, accumulator, combiner);
     }
 }
