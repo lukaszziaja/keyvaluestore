@@ -1,6 +1,7 @@
 package simplestore;
 
-import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -21,40 +22,26 @@ import java.util.stream.Stream;
  * @Serializable interface. If not, it will throw @NotSerializableException due the way I have implemented
  * cloning.
  */
-public class SimpleKeyValueStore<T extends Serializable> implements KeyValueStore<T> {
+public class SimpleKeyValueStore<T> implements KeyValueStore<T> {
 
     private Map<String, LinkedHashMap<String,T>> store = new LinkedHashMap<>();
 
     @Override
-    public void put(String namespace, String key, T value) throws IOException, ClassNotFoundException {
-        T newValue = this.clone(value);
+    public void put(String namespace, String key, T value) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+
+        Class<?> aClass = value.getClass();
+        Constructor<?> constructor = aClass.getConstructor();
+        T o = (T) constructor.newInstance(value);
+
         if(!store.containsKey(namespace)){
             LinkedHashMap<String, T> namespaceMap = new LinkedHashMap<>();
-            namespaceMap.put(key,newValue);
+            namespaceMap.put(key,o);
             store.put(namespace,namespaceMap);
         }else{
             LinkedHashMap<String, T> stringTLinkedHashMap = store.get(namespace);
-            stringTLinkedHashMap.put(key,newValue);
+            stringTLinkedHashMap.put(key,o);
             store.put(namespace,stringTLinkedHashMap);
         }
-    }
-
-    private T clone(T obj) throws IOException, ClassNotFoundException {
-        byte[] bytes = objToByte(obj);
-        return byteToObj(bytes);
-    }
-
-    private byte[] objToByte(T value) throws IOException {
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        ObjectOutputStream objStream = new ObjectOutputStream(byteStream);
-        objStream.writeObject(value);
-        return byteStream.toByteArray();
-    }
-
-    private T byteToObj(byte[] bytes) throws IOException, ClassNotFoundException {
-        ByteArrayInputStream byteStream = new ByteArrayInputStream(bytes);
-        ObjectInputStream objStream = new ObjectInputStream(byteStream);
-        return (T) objStream.readObject();
     }
 
     @Override

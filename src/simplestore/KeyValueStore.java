@@ -1,7 +1,6 @@
 package simplestore;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -18,12 +17,12 @@ import java.util.stream.Stream;
  * do you want to do an operation.
  */
 
-public interface KeyValueStore<T extends Serializable>{
+public interface KeyValueStore<T>{
 
     /**
      * saves or updates the value for a namespace/key
      */
-    void put(String namespace, String key, T value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException, ClassNotFoundException;
+    void put(String namespace, String key, T value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, IOException, ClassNotFoundException, NoSuchFieldException, InstantiationException;
 
     /**
      * returns the value for a namespace/key pair

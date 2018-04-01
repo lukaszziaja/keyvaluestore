@@ -23,7 +23,7 @@ class SimpleKeyValueStoreTest {
     }
 
     @Test
-    void putAndGetValuesShouldBeTheSame() throws ClassNotFoundException, NoSuchMethodException, IOException, IllegalAccessException, InvocationTargetException {
+    void putAndGetValuesShouldBeTheSame() throws NoSuchMethodException, IllegalAccessException, NoSuchFieldException, ClassNotFoundException, InvocationTargetException, IOException, InstantiationException {
         stringSimpleKeyValueStore.put("oneNamespace", "myValue", "a");
         stringSimpleKeyValueStore.put("twoNamespace", "myValue", "b");
 
@@ -32,7 +32,7 @@ class SimpleKeyValueStoreTest {
     }
 
     @Test
-    void shouldDeleteElementSuccessfully() throws ClassNotFoundException, NoSuchMethodException, IOException, IllegalAccessException, InvocationTargetException {
+    void shouldDeleteElementSuccessfully() throws ClassNotFoundException, NoSuchMethodException, IOException, IllegalAccessException, InvocationTargetException, NoSuchFieldException, InstantiationException {
         stringSimpleKeyValueStore.put("twoNamespace", "myValue", "b");
         boolean deletionResult = stringSimpleKeyValueStore.delete("twoNamespace", "myValue");
 
@@ -41,7 +41,7 @@ class SimpleKeyValueStoreTest {
     }
 
     @Test
-    void shouldUpdateExistingElement() throws ClassNotFoundException, NoSuchMethodException, IOException, IllegalAccessException, InvocationTargetException {
+    void shouldUpdateExistingElement() throws ClassNotFoundException, NoSuchMethodException, IOException, IllegalAccessException, InvocationTargetException, NoSuchFieldException, InstantiationException {
         stringSimpleKeyValueStore.put("oneNamespace", "myValue", "b");
         stringSimpleKeyValueStore.put("oneNamespace", "myValue", "c");
 
@@ -49,7 +49,7 @@ class SimpleKeyValueStoreTest {
     }
 
     @Test
-    void objectValuesShouldBeImmutableAfterSaving() throws ClassNotFoundException, NoSuchMethodException, IOException, IllegalAccessException, InvocationTargetException {
+    void objectValuesShouldBeImmutableAfterSaving() throws ClassNotFoundException, NoSuchMethodException, IOException, IllegalAccessException, InvocationTargetException, NoSuchFieldException, InstantiationException {
         KeyValueStore<ValueObject> valueObjectKeyValueStore = new SimpleKeyValueStore<>();
 
         valueObject.setName("Tom");
@@ -60,7 +60,7 @@ class SimpleKeyValueStoreTest {
     }
 
     @Test
-    void shouldFilterOnlyCertainValues() throws ClassNotFoundException, NoSuchMethodException, IOException, IllegalAccessException, InvocationTargetException {
+    void shouldFilterOnlyCertainValues() throws ClassNotFoundException, NoSuchMethodException, IOException, IllegalAccessException, InvocationTargetException, NoSuchFieldException, InstantiationException {
         stringSimpleKeyValueStore.put("oneNamespace", "1", "b");
         stringSimpleKeyValueStore.put("oneNamespace", "2", "b");
         stringSimpleKeyValueStore.put("oneNamespace", "3", "a");
@@ -74,7 +74,7 @@ class SimpleKeyValueStoreTest {
     }
 
     @Test
-    void shouldMakeValuesUpperCaseUsingMap() throws ClassNotFoundException, NoSuchMethodException, IOException, IllegalAccessException, InvocationTargetException {
+    void shouldMakeValuesUpperCaseUsingMap() throws ClassNotFoundException, NoSuchMethodException, IOException, IllegalAccessException, InvocationTargetException, NoSuchFieldException, InstantiationException {
 
         stringSimpleKeyValueStore.put("oneNamespace", "1", "Java 8");
         stringSimpleKeyValueStore.put("oneNamespace", "2", "makes");
@@ -90,7 +90,7 @@ class SimpleKeyValueStoreTest {
     }
 
     @Test
-    void shouldAddAllTheValuesUsingConcat() throws ClassNotFoundException, NoSuchMethodException, IOException, IllegalAccessException, InvocationTargetException {
+    void shouldAddAllTheValuesUsingConcat() throws ClassNotFoundException, NoSuchMethodException, IOException, IllegalAccessException, InvocationTargetException, NoSuchFieldException, InstantiationException {
         KeyValueStore<Integer> integerKeyValueStore = new SimpleKeyValueStore<>();
 
         integerKeyValueStore.put("oneNamespace", "1", 100);
